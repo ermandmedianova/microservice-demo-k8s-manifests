@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: default
+  labels:
+    app: microservice-demo
+data:
+  # Database configuration
+  DB_HOST: "mysql-service"
+  DB_PORT: "3306"
+  DB_NAME: "crud_api"
+  
+  # Redis configuration
+  REDIS_URL: "redis://redis-service:6379/0"
+  
+  # API URLs for internal communication
+  CRUD_API_URL: "http://crud-api-service:8000"
+  EMAIL_API_URL: "http://email-api-service:8000"
+  
+  # Frontend API URLs (for browser requests)
+  NEXT_PUBLIC_CRUD_API_URL: "http://localhost:8006"
+  NEXT_PUBLIC_EMAIL_API_URL: "http://localhost:8007"

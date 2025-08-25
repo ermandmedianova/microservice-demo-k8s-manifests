@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Job'a açıklayıcı bir isim verelim
+  name: alembic-migration-job
+  namespace: default
+spec:
+  # Job tamamlandıktan 100 saniye sonra kendini otomatik silsin (isteğe bağlı ama önerilir)
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: alembic-migrator
+        # Uygulama ile aynı imajı kullanıyoruz, çünkü alembic ve scriptler burada.
+        image: ermand172/microservice-demo-crud-api:v2
+        imagePullPolicy: IfNotPresent
+        # !!! EN ÖNEMLİ KISIM !!!
+        # Container'ın varsayılan komutunu ezip yerine kendi komutumuzu veriyoruz.
+        command: ["alembic", "upgrade", "head"]
+        # Veritabanına bağlanabilmesi için Deployment'taki env'lerin aynısı gerekli.
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-password
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-host
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-port
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-database
+      # Hata durumunda container'ı yeniden başlatma politikası.
+      # Job'lar için 'OnFailure' veya 'Never' kullanılır.
+      restartPolicy: OnFailure
+  # Hata durumunda Job'un kaç kere yeniden deneneceğini belirtir.
+  backoffLimit: 4

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: ermand172/microservice-demo-frontend:v4
+        image: ermand172/microservice-demo-frontend:d338c8468a3cf35443eaa5a5ea66bca37004c130
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
